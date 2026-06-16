@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Proposal – Reloop Recycling FZE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Variables ── */
+    :root{
+      --green:#0a7f3f; --green-dk:#065c2c; --green-lt:#e8f5ed;
+      --blue:#2fa4d7;  --blue-dk:#1a6e9e;  --blue-lt:#e5f4fb;
+      --grey:#f4f6f8;  --border:#c8d4dc;
+      --text:#1a2332;  --muted:#6b7a8d;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+    body{
+      font-family:'Inter',sans-serif;
+      background:#d0dae3;
+      color:var(--text);
+      display:flex; flex-direction:column; align-items:center;
+      padding:18px 12px 40px;
+      min-height:100vh;
+    }
+
+    /* ═══════════════ TOOLBAR ═══════════════ */
+    .toolbar{
+      width:100%; max-width:900px;
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:12px; gap:10px; flex-wrap:wrap;
+    }
+    .toolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .lbl{font-size:11px;font-weight:700;color:var(--muted);}
+
+    select.cur-sel{
+      background:#fff; border:2px solid var(--green);
+      border-radius:7px; padding:5px 10px;
+      font-family:'Inter',sans-serif; font-size:13px;
+      font-weight:700; color:var(--green-dk); cursor:pointer; outline:none;
+    }
+    .btn{
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:'Inter',sans-serif; font-size:12px; font-weight:700;
+      padding:7px 16px; border-radius:20px; cursor:pointer;
+      transition:all .18s; border:none;
+    }
+    .btn-add{background:var(--green-lt);color:var(--green-dk);border:1.5px solid var(--green);}
+    .btn-add:hover{background:var(--green);color:#fff;}
+    .btn-print{
+      background:linear-gradient(135deg,var(--green),var(--blue));
+      color:#fff; box-shadow:0 4px 16px rgba(10,127,63,.28);
+      padding:8px 20px;
+    }
+    .btn-print:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(10,127,63,.38);}
+    .btn-print svg{width:15px;height:15px;fill:currentColor;}
+
+    /* ═══════════════ INVOICE WRAPPER ═══════════════ */
+    .po-wrap{
+      width:100%; max-width:900px;
+      background:#fff; border-radius:12px; overflow:hidden;
+      box-shadow:0 8px 40px rgba(0,0,0,.14);
+    }
+
+    /* ═══════════════ HEADER ═══════════════ */
+    .po-header{background:#fff;}
+
+    .top-bar{
+      height:6px;
+      background:linear-gradient(90deg, var(--green) 0%, var(--blue) 100%);
+    }
+
+    .header-grid{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      align-items:center;
+      border-bottom:2px solid var(--border);
+      background:var(--grey);
+      padding: 16px 20px;
+      gap: 20px;
+    }
+
+    .info-logo img{
+      width:90px;
+      height:90px;
+      object-fit:contain;
+      display:block;
+    }
+
+    .header-company-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .header-proposal-title {
+      text-align: right;
+    }
+    .prop-title-badge {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--blue-dk);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+
+    /* Editable text */
+    [contenteditable]{
+      outline:none;
+      border-bottom:1px dashed transparent;
+      transition:border-color .2s;
+      display:inline-block;
+      min-width:20px;
+    }
+    [contenteditable]:hover{border-color:var(--blue);}
+    [contenteditable]:focus{
+      border-color:var(--green);
+      background:rgba(10,127,63,.04);
+      border-radius:2px;
+    }
+
+    .co-name{font-size:16px;font-weight:800;color:var(--green-dk);}
+    .co-trn {font-size:12px;color:var(--muted);font-weight:500;}
+    .co-details {font-size:11px;color:var(--muted);line-height:1.5;margin-top:2px;}
+
+    /* ═══════════════ BODY ═══════════════ */
+    .po-body{padding:20px 20px 16px;}
+
+    /* TITLE SECTION */
+    .hero-title-section {
+      text-align: center;
+      padding: 10px 20px 20px;
+      margin-bottom: 20px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .hero-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--green-dk);
+      margin-bottom: 8px;
+    }
+    .hero-subtitle {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--blue-dk);
+    }
+
+    /* META GRID */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .meta-box {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .meta-box-head {
+      background: var(--grey);
+      padding: 8px 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .meta-box-body {
+      padding: 10px 12px;
+    }
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .meta-table td {
+      padding: 4px 0;
+      font-size: 12px;
+      vertical-align: top;
+    }
+    .meta-table td.lbl {
+      font-weight: 600;
+      color: var(--muted);
+      width: 110px;
+    }
+    .meta-table input, .meta-table textarea {
+      width: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text);
+      resize: none;
+    }
+    .meta-table textarea {
+      height: 36px;
+    }
+
+    /* ITEMS TABLE */
+    .item-tbl{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom: 16px;}
+    .item-tbl thead tr{
+      background:linear-gradient(90deg,var(--green-dk),var(--blue-dk));
+      color:#fff;
+    }
+    .item-tbl thead th{
+      padding:9px 8px;font-size:10.5px;font-weight:700;
+      letter-spacing:1px;text-transform:uppercase;
+      border:1px solid rgba(255,255,255,.2);text-align:center;
+      position: relative;
+    }
+    .item-tbl thead th.dh{text-align:left;}
+
+    .rm-col-btn {
+      position: absolute;
+      top: -8px; right: -8px;
+      background: #c0392b; color: white; border: none;
+      border-radius: 50%; width: 18px; height: 18px;
+      font-size: 10px; cursor: pointer; display: none;
+      align-items: center; justify-content: center;
+      line-height: 1; padding: 0; z-index: 10;
+    }
+    .item-tbl thead th:hover .rm-col-btn { display: flex; }
+
+    .item-tbl tbody tr{background:#fff;}
+    .item-tbl tbody tr:nth-child(even){background:#f8fbfc;}
+    .item-tbl tbody tr:hover{background:var(--green-lt);}
+    .item-tbl tbody td{
+      border:1px solid var(--border);
+      padding:5px;text-align:center;vertical-align:middle;
+    }
+    .item-tbl tbody td.dtd{text-align:left;}
+    .item-tbl tbody td.sr{font-size:11px;font-weight:600;color:var(--muted);width:34px;}
+
+    .item-tbl tbody td .cell-edit{
+      width:100%;border:none;background:transparent;
+      text-align:center;font-family:'Inter',sans-serif;
+      font-size:11.5px;color:var(--text);padding:3px 4px;outline:none;
+      min-height: 18px; white-space: pre-wrap; word-wrap: break-word;
+    }
+    .item-tbl tbody td.dtd .cell-edit{text-align:left;}
+    .item-tbl tbody td .cell-edit:focus{
+      background:rgba(10,127,63,.06);border-radius:3px;
+    }
+
+    .amt-inp{font-weight:600;color:var(--green-dk) !important;}
+
+    /* Remove row */
+    .rm-btn{
+      background:none;border:none;cursor:pointer;
+      color:#c0392b;font-size:14px;padding:2px 5px;
+      border-radius:4px;transition:background .15s;
+    }
+    .rm-btn:hover{background:#fdecea;}
+
+    /* Totals */
+    .totals-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      background: #fff;
+    }
+    .tot-row {
+      display: flex;
+      width: 300px;
+      border: 1.5px solid var(--border);
+      border-top: none;
+      background: #f8fbfc;
+    }
+    .tot-row:first-child {
+      border-top: 1.5px solid var(--border);
+    }
+    .tot-row.gt-row {
+      background: linear-gradient(90deg,var(--green-dk),var(--blue-dk));
+      border-color: transparent;
+    }
+    .tot-lbl {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: right;
+      color: var(--text);
+      border-right: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .tot-val {
+      width: 120px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gt-row .tot-lbl {
+      color: #fff;
+      border-right-color: rgba(255,255,255,0.2);
+    }
+    .gt-row .tot-val {
+      color: #fff;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    /* ═══════════════ ROW CONTROLS ═══════════════ */
+    .row-ctrl{
+      display:flex;align-items:center;gap:10px;
+      padding:7px 20px;background:var(--grey);
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+    }
+    .row-cnt{font-size:11px;color:var(--muted);}
+
+    /* ═══════════════ GUARANTEE & TERMS ═══════════════ */
+    .info-section {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .info-block-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--green-dk);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .info-block-text {
+      font-size: 11px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .info-block-text ul {
+      margin-left: 16px;
+      margin-top: 4px;
+    }
+
+    /* ═══════════════ BOTTOM SECTION (PAYMENT + SIGNATURE) ═══════════════ */
+    .bottom-section{
+      display:flex; justify-content:space-between; align-items:flex-end;
+      padding:20px;
+      gap:20px;
+    }
+    .pay-head{
+      font-size:11px;font-weight:800;letter-spacing:1.5px;
+      text-transform:uppercase;color:var(--text);
+      padding-bottom:5px;margin-bottom:8px;
+      border-bottom:2px solid var(--green);
+      display:inline-block;
+    }
+    .pay-tbl{width:auto;border-collapse:collapse;font-size:11.5px;}
+    .pay-tbl td{padding:5px 12px;border:1.5px solid var(--border);}
+    .pay-tbl td.plbl{font-weight:700;background:var(--grey);white-space:nowrap;width:120px;}
+    .pay-tbl td input{
+      border:none;outline:none;background:transparent;
+      font-family:'Inter',sans-serif;font-size:11.5px;color:var(--text);
+      min-width:180px;
+    }
+
+    /* Signature col */
+    .sig-col { text-align: center; }
+    .sig-lbl{font-size:10px;font-weight:700;text-transform:uppercase;
+             color:var(--muted);letter-spacing:1px;margin-bottom:8px;}
+    .sig-row{display:inline-flex;align-items:flex-end;gap:20px;}
+    .sig-area{flex:0 0 auto; display:flex; flex-direction:column; align-items:center;}
+    .sig-placeholder {
+      height: 70px;
+      width: 170px;
+    }
+    .sig-line{border-bottom:1.5px solid var(--green);margin-top:2px;width:170px;}
+    .sig-line-lbl{font-size:9.5px;font-weight:600;color:var(--text);margin-top:5px;
+                  text-transform:uppercase;letter-spacing:.5px;}
+    .stamp-placeholder{
+      width:90px;height:90px;
+      border:1.5px dashed var(--border);
+      border-radius: 50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size: 10px; color: var(--muted); font-weight: 600; text-align: center;
+      margin-bottom: 10px;
+    }
+
+    /* ═══════════════ FOOTER ═══════════════ */
+    .po-footer{position:relative;overflow:hidden;}
+
+    /* Bottom strip */
+    .foot-strip{
+      background:linear-gradient(90deg,var(--blue-dk),var(--green-dk));
+      display:flex;
+      justify-content:space-between;
+      align-items:center;padding:8px 20px;
+      font-size:10px;color:rgba(255,255,255,.85);font-weight:500;
+    }
+
+    /* ═══════════════ PRINT ═══════════════ */
+    @media print{
+      @page{size:A4 portrait;margin:8mm;}
+      html,body{background:#fff !important;padding:0;margin:0;display:block;}
+      .toolbar,.row-ctrl,.rm-btn,.no-print{display:none !important;}
+      .po-wrap{max-width:100%;box-shadow:none;border-radius:0;border:none;}
+      *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
+      .po-body{padding:12px 16px !important;}
+      .header-grid { padding: 12px 16px !important; }
+      .hero-title-section { padding: 5px 16px 15px !important; margin-bottom: 15px !important;}
+      .info-section { padding: 12px 16px !important; gap: 15px !important; }
+      .bottom-section { padding: 12px 16px 16px !important; }
+      .meta-box-body { padding: 6px 10px !important; }
+      [contenteditable]{border-bottom:none !important;background:transparent !important;}
+      input, textarea { background:transparent !important; resize: none !important;}
+      
+      .item-tbl{page-break-inside:avoid;}
+      .info-section{page-break-inside:avoid;}
+      .bottom-section{page-break-inside:avoid;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ TOOLBAR ══════════ -->
+<div class="toolbar no-print" id="toolbar">
+  <div class="toolbar-left">
+    <span class="lbl">Currency:</span>
+    <select class="cur-sel" id="curSel" onchange="applyCurrency()">
+      <option value="AED" selected>🇦🇪 AED</option>
+      <option value="USD">🇺🇸 USD</option>
+      <option value="EUR">🇪🇺 EUR</option>
+      <option value="GBP">🇬🇧 GBP</option>
+      <option value="INR">🇮🇳 INR</option>
+    </select>
+
+    <label class="lbl" style="display:flex; align-items:center; gap:4px; cursor:pointer; margin-left: 5px; margin-right: 5px;">
+      <input type="checkbox" id="vatToggle" onchange="toggleVat()" /> Show VAT
+    </label>
+
+    <button class="btn btn-add" onclick="addColumn()">＋ Add Column</button>
+    <button class="btn btn-add" onclick="addRow()">＋ Add Row</button>
+  </div>
+  <button class="btn btn-print" onclick="window.print()">
+    <svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+    Download as PDF
+  </button>
+</div>
+
+<!-- ══════════ DOCUMENT WRAPPER ══════════ -->
+<div class="po-wrap" id="inv-doc">
+
+  <!-- ══ HEADER ══ -->
+  <header class="po-header">
+    <div class="top-bar"></div>
+    <div class="header-grid">
+      <div class="info-logo">
+        <img src="logo.png" alt="Reloop Recycling Logo"/>
+      </div>
+      <div class="header-company-info">
+        <div class="co-name" contenteditable="true">Reloop Recycling FZE</div>
+        <div class="co-trn">TRN: <span contenteditable="true">105170462300003</span></div>
+        <div class="co-details">
+          <span contenteditable="true">info@reloopglobal.com</span> | <span contenteditable="true">+971 543252882</span><br/>
+          <span contenteditable="true">RA08 TC05, JAFZA, Dubai, UAE</span>
+        </div>
+      </div>
+      <div class="header-proposal-title">
+        <div class="prop-title-badge" contenteditable="true">Proposal</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;">Date: <input type="text" id="propDate" style="border:none;border-bottom:1px solid #ccc;outline:none;font-family:inherit;width:100px;text-align:center;" value="22-Apr-2026"/></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ BODY ══ -->
+  <main class="po-body">
+
+    <!-- Title Section -->
+    <div class="hero-title-section">
+      <div class="hero-title" contenteditable="true">Proposal for Secure Product Destruction & Recycling</div>
+      <div class="hero-subtitle" contenteditable="true">Working to make you a global sustainability champion</div>
+    </div>
+
+    <!-- Meta Details Grid -->
+    <div class="meta-grid">
+      <!-- Prepared For (Client) -->
+      <div class="meta-box">
+        <div class="meta-box-head">Prepared For / Bill To</div>
+        <div class="meta-box-body">
+          <table class="meta-table">
+            <tr>
+              <td class="lbl">Company Name:</td>
+              <td><input type="text" placeholder="Client Company Name"/></td>
+            </tr>
+            <tr>
+              <td class="lbl">Address:</td>
+              <td><textarea placeholder="Client Address"></textarea></td>
+            </tr>
+            <tr>
+              <td class="lbl">Contact Person:</td>
+              <td><input type="text" placeholder="Contact Name"/></td>
+            </tr>
+            <tr>
+              <td class="lbl">Phone:</td>
+              <td><input type="text" placeholder="+971 XX XXX XXXX"/></td>
+            </tr>
+            <tr>
+              <td class="lbl">Email:</td>
+              <td><input type="text" placeholder="email@client.com"/></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Prepared By (Reloop) -->
+      <div class="meta-box">
+        <div class="meta-box-head">Prepared By</div>
+        <div class="meta-box-body">
+          <table class="meta-table">
+            <tr>
+              <td class="lbl">Name:</td>
+              <td><input type="text" value="Smit Chauhan"/></td>
+            </tr>
+            <tr>
+              <td class="lbl">Position:</td>
+              <td><input type="text" value="Business Development Executive"/></td>
+            </tr>
+            <tr>
+              <td class="lbl">Email:</td>
+              <td><input type="text" value="smit@reloopglobal.com"/></td>
+            </tr>
+            <tr>
+              <td class="lbl">Phone:</td>
+              <td><input type="text" value="+971 543252882"/></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service Table -->
+    <table class="item-tbl" id="itemTbl">
+      <thead>
+        <tr id="theadRow">
+          <th style="width:34px">Sr.No</th>
+          <th class="dh">
+            <div contenteditable="true">Product / Service</div>
+            <button class="rm-col-btn no-print" onclick="removeColumn(this)" title="Remove Column">✕</button>
+          </th>
+          <th style="width:80px">
+            <div contenteditable="true">UOM</div>
+            <button class="rm-col-btn no-print" onclick="removeColumn(this)" title="Remove Column">✕</button>
+          </th>
+          <th style="width:100px">
+            <div contenteditable="true">Unit Rate (<span class="curHdr">AED</span>)</div>
+            <button class="rm-col-btn no-print" onclick="removeColumn(this)" title="Remove Column">✕</button>
+          </th>
+          <th style="width:70px">
+            <div contenteditable="true">Quantity</div>
+            <button class="rm-col-btn no-print" onclick="removeColumn(this)" title="Remove Column">✕</button>
+          </th>
+          <th style="width:120px">
+            <div contenteditable="true">Total (<span class="curHdr">AED</span>)</div>
+            <button class="rm-col-btn no-print" onclick="removeColumn(this)" title="Remove Column">✕</button>
+          </th>
+          <th style="width:30px" class="no-print"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+      <tfoot id="tfoot">
+        <tr>
+          <td colspan="100" style="padding:0; border:none; background:#fff;">
+            <div class="totals-wrapper">
+              <div class="tot-row">
+                <div class="tot-lbl" contenteditable="true">Subtotal</div>
+                <div class="tot-val" contenteditable="true">0.00</div>
+              </div>
+              <div class="tot-row" id="vatRow" style="display:none;">
+                <div class="tot-lbl" contenteditable="true">VAT (5%)</div>
+                <div class="tot-val" contenteditable="true">0.00</div>
+              </div>
+              <div class="tot-row gt-row">
+                <div class="tot-lbl" contenteditable="true">Grand Total</div>
+                <div class="tot-val"><span id="curSymDisplay">AED</span>&nbsp;<span contenteditable="true">0.00</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+  </main>
+
+  <!-- ══ ROW CONTROLS ══ -->
+  <div class="row-ctrl no-print">
+    <button class="btn btn-add" onclick="addColumn()">＋ Add Column</button>
+    <button class="btn btn-add" onclick="addRow()">＋ Add Row</button>
+    <span class="row-cnt" id="rowCnt"></span>
+  </div>
+
+  <!-- ══ GUARANTEE & TERMS ══ -->
+  <div class="info-section">
+    <div>
+      <div class="info-block-title">Our Guarantee</div>
+      <div class="info-block-text" contenteditable="true">
+        Reloop Recycling guarantees the completely secure, transparent, and eco-friendly destruction of your products. Our process ensures zero leakage into secondary markets. We prioritize sustainability and adhere to the highest global standards for waste management and recycling.
+      </div>
+    </div>
+    <div>
+      <div class="info-block-title">Terms & Conditions</div>
+      <div class="info-block-text">
+        <ul contenteditable="true">
+          <li><strong>Proposal Validity:</strong> 15 Days from the date of issuance.</li>
+          <li><strong>Weight Measurement:</strong> Final weight considered for billing will be exactly as recorded at our recycling facility.</li>
+          <li><strong>Compliance:</strong> Operations comply with UAE local municipality regulations.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BOTTOM SECTION (PAYMENT + SIGNATURE) ══ -->
+  <div class="bottom-section">
+    <!-- Payment Details -->
+    <div class="pay-section">
+      <div class="pay-head">Bank Details</div>
+      <table class="pay-tbl">
+        <tr>
+          <td class="plbl">Payment terms</td>
+          <td><input type="text" id="payTerms" value="Advance / As Agreed"/></td>
+        </tr>
+        <tr>
+          <td class="plbl">Bank Name</td>
+          <td><input type="text" id="bankName" value="ADCB"/></td>
+        </tr>
+        <tr>
+          <td class="plbl">Account Name</td>
+          <td><input type="text" id="accName" value="Reloop Recycling FZE"/></td>
+        </tr>
+        <tr>
+          <td class="plbl">Account Number</td>
+          <td><input type="text" id="accNum" value="14328262920001"/></td>
+        </tr>
+        <tr>
+          <td class="plbl">IBAN</td>
+          <td><input type="text" id="ibanNum" value="AE06 0030 0143 2826 2920 001"/></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Signature + Stamp -->
+    <div class="sig-col">
+      <div class="sig-row">
+        <!-- Stamp placeholder -->
+        <div class="stamp-placeholder" contenteditable="true">Company<br/>Stamp</div>
+        <!-- Signature block -->
+        <div class="sig-area">
+          <div class="sig-placeholder"></div>
+          <div class="sig-line"></div>
+          <div class="sig-line-lbl" contenteditable="true">Client Acceptance Signature</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="po-footer">
+    <!-- Bottom strip -->
+    <div class="foot-strip">
+      <span>📞 +971 543252882</span>
+      <span>🌐 www.reloopglobal.com</span>
+      <span>✉ info@reloopglobal.com</span>
+    </div>
+  </footer>
+
+</div><!-- /inv-doc -->
+
+<!-- ══════════ JAVASCRIPT ══════════ -->
+<script>
+  /* ── State ── */
+  let rowId   = 0;
+  let curCode = 'AED';
+
+  const SYM = { AED:'AED', USD:'$', EUR:'€', GBP:'£', INR:'₹' };
+
+  /* ── Init ── */
+  document.addEventListener('DOMContentLoaded', () => {
+    const d  = new Date();
+    const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('propDate').value = `${d.getDate()}-${mo[d.getMonth()]}-${d.getFullYear()}`;
+    for (let i = 0; i < 4; i++) addRow();
+  });
+
+  /* ── Add Row ── */
+  function addRow() {
+    rowId++;
+    const id = rowId;
+    const tr = document.createElement('tr');
+    tr.id = `r${id}`;
+    
+    let html = `<td class="sr" id="sr${id}">${document.querySelectorAll('#tbody tr').length + 1}</td>`;
+    
+    const ths = document.querySelectorAll('#theadRow th');
+    for (let i = 1; i < ths.length - 1; i++) {
+        let alignClass = i === 1 ? 'dtd' : '';
+        html += `<td class="${alignClass}"><div class="cell-edit" contenteditable="true"></div></td>`;
+    }
+    
+    html += `<td class="no-print"><button class="rm-btn" onclick="removeRow(${id})" title="Remove">✕</button></td>`;
+    tr.innerHTML = html;
+
+    document.getElementById('tbody').appendChild(tr);
+    updateRowCount();
+  }
+
+  /* ── Add Column ── */
+  function addColumn() {
+    const theadRow = document.getElementById('theadRow');
+    const ths = theadRow.querySelectorAll('th');
+    const newTh = document.createElement('th');
+    newTh.innerHTML = `
+      <div contenteditable="true">New Column</div>
+      <button class="rm-col-btn no-print" onclick="removeColumn(this)" title="Remove Column">✕</button>
+    `;
+    theadRow.insertBefore(newTh, ths[ths.length - 1]);
+
+    const trs = document.querySelectorAll('#tbody tr');
+    trs.forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      const newTd = document.createElement('td');
+      newTd.innerHTML = `<div class="cell-edit" contenteditable="true"></div>`;
+      tr.insertBefore(newTd, tds[tds.length - 1]);
+    });
+
+    updateColspan();
+  }
+
+  /* ── Remove Column ── */
+  function removeColumn(btn) {
+    const th = btn.parentElement;
+    const theadRow = th.parentElement;
+    const ths = Array.from(theadRow.querySelectorAll('th'));
+    const colIndex = ths.indexOf(th);
+
+    if (ths.length <= 3) {
+      alert('At least one editable column is required.');
+      return;
+    }
+
+    th.remove();
+
+    const trs = document.querySelectorAll('#tbody tr');
+    trs.forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      if (tds[colIndex]) {
+        tds[colIndex].remove();
+      }
+    });
+
+    updateColspan();
+  }
+
+  function updateColspan() {
+    // No longer needed since tfoot uses colspan="100"
+  }
+
+  function toggleVat() {
+    const vatRow = document.getElementById('vatRow');
+    if (document.getElementById('vatToggle').checked) {
+      vatRow.style.display = 'flex';
+    } else {
+      vatRow.style.display = 'none';
+    }
+  }
+
+  /* ── Remove Row ── */
+  function removeRow(id) {
+    const rows = document.querySelectorAll('#tbody tr');
+    if (rows.length <= 1) { alert('At least one row is required.'); return; }
+    document.getElementById(`r${id}`)?.remove();
+    renumber();
+    updateRowCount();
+  }
+
+  /* ── Renumber ── */
+  function renumber() {
+    document.querySelectorAll('#tbody tr').forEach((tr, i) => {
+      const srEl = tr.querySelector('[id^="sr"]');
+      if (srEl) srEl.textContent = i + 1;
+    });
+  }
+
+  /* ── Format number ── */
+  function fmtN(n) {
+    return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  /* ── Currency change ── */
+  function applyCurrency() {
+    curCode = document.getElementById('curSel').value;
+    const sym = SYM[curCode] || curCode;
+    // Update column headers
+    document.querySelectorAll('.curHdr').forEach(el => el.textContent = curCode);
+    
+    document.getElementById('curSymDisplay').textContent = sym;
+  }
+
+  /* ── Row count label ── */
+  function updateRowCount() {
+    const c = document.querySelectorAll('#tbody tr').length;
+    document.getElementById('rowCnt').textContent = `${c} row${c!==1?'s':''}`;
+  }
+</script>
+
+</body>
+</html>
