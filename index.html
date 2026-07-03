@@ -17,6 +17,14 @@
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
+    textarea {
+      overflow: hidden !important;
+      resize: none !important;
+      word-break: break-all !important;
+      overflow-wrap: break-word !important;
+      white-space: pre-wrap !important;
+    }
+
     body{
       font-family:'Inter',sans-serif;
       background:#d0dae3;
@@ -114,6 +122,10 @@
       transition:border-color .2s;
       display:inline-block;
       min-width:20px;
+      max-width: 100%;
+      word-break: break-all;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
     }
     [contenteditable]:hover{border-color:var(--blue);}
     [contenteditable]:focus{
@@ -199,7 +211,10 @@
       resize: none;
     }
     .meta-table textarea {
-      height: 36px;
+      height: auto;
+      min-height: 20px;
+      padding-top: 2px;
+      padding-bottom: 2px;
     }
 
     /* ITEMS TABLE */
@@ -363,10 +378,10 @@
     .pay-tbl{width:auto;border-collapse:collapse;font-size:11.5px;}
     .pay-tbl td{padding:5px 12px;border:1.5px solid var(--border);}
     .pay-tbl td.plbl{font-weight:700;background:var(--grey);white-space:nowrap;width:120px;}
-    .pay-tbl td input{
+    .pay-tbl td input, .pay-tbl td textarea{
       border:none;outline:none;background:transparent;
       font-family:'Inter',sans-serif;font-size:11.5px;color:var(--text);
-      min-width:180px;
+      min-width:180px; width:100%; resize:none; overflow:hidden; display:block;
     }
 
     /* Signature col */
@@ -496,23 +511,23 @@
           <table class="meta-table">
             <tr>
               <td class="lbl">Company Name:</td>
-              <td><input type="text" placeholder="Client Company Name"/></td>
+              <td><textarea rows="1" placeholder="Client Company Name"></textarea></td>
             </tr>
             <tr>
               <td class="lbl">Address:</td>
-              <td><textarea placeholder="Client Address"></textarea></td>
+              <td><textarea placeholder="Client Address" rows="2"></textarea></td>
             </tr>
             <tr>
               <td class="lbl">Contact Person:</td>
-              <td><input type="text" placeholder="Contact Name"/></td>
+              <td><textarea rows="1" placeholder="Contact Name"></textarea></td>
             </tr>
             <tr>
               <td class="lbl">Phone:</td>
-              <td><input type="text" placeholder="+971 XX XXX XXXX"/></td>
+              <td><textarea rows="1" placeholder="+971 XX XXX XXXX"></textarea></td>
             </tr>
             <tr>
               <td class="lbl">Email:</td>
-              <td><input type="text" placeholder="email@client.com"/></td>
+              <td><textarea rows="1" placeholder="email@client.com"></textarea></td>
             </tr>
           </table>
         </div>
@@ -525,19 +540,19 @@
           <table class="meta-table">
             <tr>
               <td class="lbl">Name:</td>
-              <td><input type="text" value="Smit Chauhan"/></td>
+              <td><textarea rows="1">Smit Chauhan</textarea></td>
             </tr>
             <tr>
               <td class="lbl">Position:</td>
-              <td><input type="text" value="Business Development Executive"/></td>
+              <td><textarea rows="1">Business Development Executive</textarea></td>
             </tr>
             <tr>
               <td class="lbl">Email:</td>
-              <td><input type="text" value="smit@reloopglobal.com"/></td>
+              <td><textarea rows="1">smit@reloopglobal.com</textarea></td>
             </tr>
             <tr>
               <td class="lbl">Phone:</td>
-              <td><input type="text" value="+971 543252882"/></td>
+              <td><textarea rows="1">+971 543252882</textarea></td>
             </tr>
           </table>
         </div>
@@ -632,23 +647,23 @@
       <table class="pay-tbl">
         <tr>
           <td class="plbl">Payment terms</td>
-          <td><input type="text" id="payTerms" value="Advance / As Agreed"/></td>
+          <td><textarea rows="1" id="payTerms">Advance / As Agreed</textarea></td>
         </tr>
         <tr>
           <td class="plbl">Bank Name</td>
-          <td><input type="text" id="bankName" value="RAKBANK"/></td>
+          <td><textarea rows="1" id="bankName">RAKBANK</textarea></td>
         </tr>
         <tr>
           <td class="plbl">Account Name</td>
-          <td><input type="text" id="accName" value="Reloop Recycling FZE"/></td>
+          <td><textarea rows="1" id="accName">Reloop Recycling FZE</textarea></td>
         </tr>
         <tr>
           <td class="plbl">Account Number</td>
-          <td><input type="text" id="accNum" value="0333716508001"/></td>
+          <td><textarea rows="1" id="accNum">0333716508001</textarea></td>
         </tr>
         <tr>
           <td class="plbl">IBAN</td>
-          <td><input type="text" id="ibanNum" value="AE430400000333716508001"/></td>
+          <td><textarea rows="1" id="ibanNum">AE430400000333716508001</textarea></td>
         </tr>
       </table>
     </div>
@@ -808,6 +823,23 @@
     const c = document.querySelectorAll('#tbody tr').length;
     document.getElementById('rowCnt').textContent = `${c} row${c!==1?'s':''}`;
   }
+
+  /* ── Auto-resize Textareas ── */
+  document.addEventListener('input', function (e) {
+    if (e.target.tagName.toLowerCase() === 'textarea') {
+      e.target.style.height = 'auto';
+      e.target.style.height = e.target.scrollHeight + 'px';
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.querySelectorAll('textarea').forEach(ta => {
+        ta.style.height = 'auto';
+        ta.style.height = ta.scrollHeight + 'px';
+      });
+    }, 0);
+  });
 </script>
 
 </body>
