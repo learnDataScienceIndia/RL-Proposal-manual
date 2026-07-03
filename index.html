@@ -336,30 +336,116 @@
     }
     .row-cnt{font-size:11px;color:var(--muted);}
 
-    /* ═══════════════ GUARANTEE & TERMS ═══════════════ */
-    .info-section {
-      padding: 20px;
+    /* ═══════════════ PAGE 2 — TERMS & CONDITIONS ═══════════════ */
+    .page2-wrap {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .14);
+      margin-top: 30px;
+    }
+    .page2-header {
+      background: linear-gradient(135deg, var(--green-dk) 0%, var(--blue-dk) 100%);
+      padding: 28px 30px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .page2-header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .page2-header-text h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .page2-header-text p {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .75);
+      font-weight: 500;
+    }
+    .page2-body {
+      padding: 24px 28px 28px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      border-bottom: 1.5px solid var(--border);
+      gap: 22px;
     }
-    .info-block-title {
+    .page2-card {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .page2-card:hover {
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .07);
+    }
+    .page2-card.full-width {
+      grid-column: 1 / -1;
+    }
+    .page2-card-head {
+      padding: 10px 16px;
+      background: var(--grey);
+      border-bottom: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page2-card-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 12px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .page2-card-title {
+      font-size: 11.5px;
       font-weight: 800;
-      color: var(--green-dk);
+      color: var(--text);
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 8px;
     }
-    .info-block-text {
-      font-size: 11px;
+    .page2-card-body {
+      padding: 14px 18px;
+      font-size: 11.5px;
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.4;
     }
-    .info-block-text ul {
+    .page2-card-body ul {
       margin-left: 16px;
       margin-top: 4px;
+    }
+    .page2-card-body li {
+      margin-bottom: 3px;
+    }
+    .page2-card-body li strong {
+      color: var(--green-dk);
+    }
+    .page2-footer-strip {
+      background: linear-gradient(90deg, var(--blue-dk), var(--green-dk));
+      padding: 10px 28px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, .85);
+      font-weight: 500;
+      text-align: center;
+      letter-spacing: .5px;
     }
 
     /* ═══════════════ BOTTOM SECTION (PAYMENT + SIGNATURE) ═══════════════ */
@@ -423,20 +509,29 @@
       @page{size:A4 portrait;margin:8mm;}
       html,body{background:#fff !important;padding:0;margin:0;display:block;}
       .toolbar,.row-ctrl,.rm-btn,.no-print{display:none !important;}
-      .po-wrap{max-width:100%;box-shadow:none;border-radius:0;border:none;}
+      
+      .po-wrap, .page2-wrap{
+        max-width:100%;box-shadow:none;border-radius:0;border:none;
+        display:flex; flex-direction:column; min-height:98vh;
+      }
+      .po-footer, .page2-footer-strip { margin-top: auto !important; }
+      
       *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
       .po-body{padding:12px 16px !important;}
       .header-grid { padding: 12px 16px !important; }
       .hero-title-section { padding: 5px 16px 15px !important; margin-bottom: 15px !important;}
-      .info-section { padding: 12px 16px !important; gap: 15px !important; }
       .bottom-section { padding: 12px 16px 16px !important; }
       .meta-box-body { padding: 6px 10px !important; }
       [contenteditable]{border-bottom:none !important;background:transparent !important;}
       input, textarea { background:transparent !important; resize: none !important;}
       
       .item-tbl{page-break-inside:avoid;}
-      .info-section{page-break-inside:avoid;}
       .bottom-section{page-break-inside:avoid;}
+
+      /* Page 2 Print Styles */
+      .page2-wrap { page-break-before: always; margin-top: 0 !important; }
+      .page2-body { padding: 16px 20px !important; gap: 16px !important; align-content: start; }
+      .page2-card { page-break-inside: avoid; }
     }
   </style>
 </head>
@@ -619,25 +714,6 @@
     <span class="row-cnt" id="rowCnt"></span>
   </div>
 
-  <!-- ══ GUARANTEE & TERMS ══ -->
-  <div class="info-section">
-    <div>
-      <div class="info-block-title">Our Guarantee</div>
-      <div class="info-block-text" contenteditable="true">
-        Reloop Recycling guarantees the completely secure, transparent, and eco-friendly destruction of your products. Our process ensures zero leakage into secondary markets. We prioritize sustainability and adhere to the highest global standards for waste management and recycling.
-      </div>
-    </div>
-    <div>
-      <div class="info-block-title">Terms & Conditions</div>
-      <div class="info-block-text">
-        <ul contenteditable="true">
-          <li><strong>Proposal Validity:</strong> 15 Days from the date of issuance.</li>
-          <li><strong>Weight Measurement:</strong> Final weight considered for billing will be exactly as recorded at our recycling facility.</li>
-          <li><strong>Compliance:</strong> Operations comply with UAE local municipality regulations.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
 
   <!-- ══ BOTTOM SECTION (PAYMENT + SIGNATURE) ══ -->
   <div class="bottom-section">
@@ -687,6 +763,45 @@
   </footer>
 
 </div><!-- /inv-doc -->
+
+<!-- ══════════ PAGE 2 — TERMS & CONDITIONS ══════════ -->
+<div class="page2-wrap" id="page2-doc">
+  <div class="top-bar"></div>
+  <div class="page2-header">
+    <div class="page2-header-icon">📋</div>
+    <div class="page2-header-text">
+      <h2 contenteditable="true">Terms & Conditions</h2>
+      <p contenteditable="true">Please review the following terms carefully before acceptance</p>
+    </div>
+  </div>
+  <div class="page2-body">
+    <div class="page2-card">
+      <div class="page2-card-head">
+        <div class="page2-card-icon">🛡️</div>
+        <div class="page2-card-title" contenteditable="true">Our Guarantee</div>
+      </div>
+      <div class="page2-card-body" contenteditable="true">
+        Reloop Recycling guarantees the completely secure, transparent, and eco-friendly destruction of your products. Our process ensures zero leakage into secondary markets. We prioritize sustainability and adhere to the highest global standards for waste management and recycling.
+      </div>
+    </div>
+    <div class="page2-card">
+      <div class="page2-card-head">
+        <div class="page2-card-icon">📄</div>
+        <div class="page2-card-title" contenteditable="true">Terms & Conditions</div>
+      </div>
+      <div class="page2-card-body" contenteditable="true">
+        <ul>
+          <li><strong>Proposal Validity:</strong> 15 Days from the date of issuance.</li>
+          <li><strong>Weight Measurement:</strong> Final weight considered for billing will be exactly as recorded at our recycling facility.</li>
+          <li><strong>Compliance:</strong> Operations comply with UAE local municipality regulations.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="page2-footer-strip">
+    📞 +971 543252882 &nbsp;&nbsp;|&nbsp;&nbsp; 🌐 www.reloopglobal.com &nbsp;&nbsp;|&nbsp;&nbsp; ✉ info@reloopglobal.com
+  </div>
+</div><!-- /page2-doc -->
 
 <!-- ══════════ JAVASCRIPT ══════════ -->
 <script>
